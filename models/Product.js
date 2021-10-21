@@ -31,8 +31,11 @@ Product.init(
       validate:{isDecimal:true}
     },
     category_id:{
-      
-    }
+      type:DataTypes.INTEGER,
+      allowNull:true,
+      reference: {model:"category", key: "id"}
+
+    },
     // define columns
   },
   {
