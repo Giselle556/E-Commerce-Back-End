@@ -25,17 +25,28 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   // find one category by its `id` value
   // be sure to include its associated Products
-  try {
-    const categoryData = await Category.findOne({
-      where:{
-        id: req.params.id
-      },
-      include:[Product]
+  Category.findOne({
+    where: {
+      id: req.params.id
+    },
+    include: [
+      {
+        model: Product,
+        attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+      }
+    ]
+  })
+    .then(dbCategoryData => {
+      if (!dbCategoryData) {
+        res.status(404).json({ message: 'No category found with this id'}); 
+        return; 
+      }
+      res.json(dbCategoryData);
     })
-    res.status(200).json(categoryData)
-  } catch (err) {
-    res.status(500).json(err);
-  }
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 router.post('/', (req, res) => {
@@ -53,16 +64,23 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
-  try {
-    const categoryData = await Category.update(req.body, {
-      where:{
+  Category.update(req.body, {
+    where: {
         id: req.params.id
-      }
-    })
-    res.status(200).json(categoryData)
-  } catch (err) {
-    res.status(500).json(err);
-  }
+    }
+  })
+    .then(dbCategoryData => {
+        if (!dbCategoryData[0]) {
+            res.status(404).json({ message: 'No category found with this id'});
+            return;
+        }
+        res.json(dbCategoryData);
+  })
+    .catch(err => {
+        console.log(err); 
+        res.status(500).json(err);
+  });
+
 });
 
 
